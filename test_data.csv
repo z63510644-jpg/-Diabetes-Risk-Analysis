@@ -1,0 +1,11 @@
+Test Case ID,Age,Glucose mg/dL,Glucose Type,BMI,Systolic BP,Diastolic BP,Insulin µIU/mL,Family History,Expected Result
+T001,32,92,Fasting,23.4,116,74,,No,Low Indicator Level
+T002,48,110,Fasting,28.1,132,84,12,Yes,Moderate Indicator Level
+T003,56,138,Fasting,31.2,145,92,,Yes,High Indicator Level
+T004,35,,Fasting,22.0,118,76,,No,Validation Error
+T005,35,90,Fasting,-2,118,76,,No,Validation Error
+T006,35,100,Fasting,22.0,118,76,,No,Moderate Indicator Level
+T007,35,250,Random,22.0,118,76,,No,Insufficient Data
+T008,35,90,Unknown,22.0,118,76,,No,Insufficient Data
+T009,35,90,Fasting,22.0,118,76,,No,Low Indicator Level
+T010,19,90,Fasting,22.0,118,76,,No,Insufficient Data

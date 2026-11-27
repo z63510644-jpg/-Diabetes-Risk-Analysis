@@ -1,0 +1,11 @@
+Test Case ID,Test Description,Input Data,Expected Result,Actual Result,Status
+T001,Low fasting glucose case,"{'age': 35, 'glucose': 90, 'glucose_type': 'Fasting', 'bmi': 22.0, 'systolic_bp': 118, 'diastolic_bp': 76, 'insulin': None, 'family_history': False}",Low Indicator Level,Low Indicator Level,PASS
+T002,Moderate fasting glucose case,"{'age': 35, 'glucose': 110, 'glucose_type': 'Fasting', 'bmi': 22.0, 'systolic_bp': 118, 'diastolic_bp': 76, 'insulin': None, 'family_history': False}",Moderate Indicator Level,Moderate Indicator Level,PASS
+T003,High fasting glucose case,"{'age': 35, 'glucose': 130, 'glucose_type': 'Fasting', 'bmi': 22.0, 'systolic_bp': 118, 'diastolic_bp': 76, 'insulin': None, 'family_history': False}",High Indicator Level,High Indicator Level,PASS
+T004,Missing required field,"{'age': 35, 'glucose': None, 'glucose_type': 'Fasting', 'bmi': 22.0, 'systolic_bp': 118, 'diastolic_bp': 76, 'insulin': None, 'family_history': False}",Validation Error,Validation Error,PASS
+T005,Invalid negative BMI,"{'age': 35, 'glucose': 90.0, 'glucose_type': 'Fasting', 'bmi': -2, 'systolic_bp': 118, 'diastolic_bp': 76, 'insulin': None, 'family_history': False}",Validation Error,Validation Error,PASS
+T006,Boundary fasting glucose 100,"{'age': 35, 'glucose': 100, 'glucose_type': 'Fasting', 'bmi': 22.0, 'systolic_bp': 118, 'diastolic_bp': 76, 'insulin': None, 'family_history': False}",Moderate Indicator Level,Moderate Indicator Level,PASS
+T007,Random glucose does not use fasting limits,"{'age': 35, 'glucose': 250, 'glucose_type': 'Random', 'bmi': 22.0, 'systolic_bp': 118, 'diastolic_bp': 76, 'insulin': None, 'family_history': False}",Insufficient Data,Insufficient Data,PASS
+T008,Unknown glucose type,"{'age': 35, 'glucose': 90.0, 'glucose_type': 'Unknown', 'bmi': 22.0, 'systolic_bp': 118, 'diastolic_bp': 76, 'insulin': None, 'family_history': False}",Insufficient Data,Insufficient Data,PASS
+T009,Optional insulin missing,"{'age': 35, 'glucose': 90.0, 'glucose_type': 'Fasting', 'bmi': 22.0, 'systolic_bp': 118, 'diastolic_bp': 76, 'insulin': None, 'family_history': False}",Low Indicator Level,Low Indicator Level,PASS
+T010,Age below project eligibility,"{'age': 19, 'glucose': 90.0, 'glucose_type': 'Fasting', 'bmi': 22.0, 'systolic_bp': 118, 'diastolic_bp': 76, 'insulin': None, 'family_history': False}",Insufficient Data,Insufficient Data,PASS
