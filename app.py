@@ -16,10 +16,10 @@ from rules import RULE_COUNT, RULES
 from test_cases import run_test_case_table
 
 st.set_page_config(
-    page_title="Diabetes Risk Analysis",
+    page_title="GlycoSense | Diabetes Risk Analysis",
     page_icon="🩺",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 # ---------------------------------------------------------------------
@@ -32,6 +32,7 @@ st.markdown(
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap');
 
 :root {
+  color-scheme: light !important;
   --ink: #17243a;
   --muted: #718096;
   --blue: #2864dc;
@@ -40,17 +41,34 @@ st.markdown(
   --surface: #ffffff;
   --canvas: #f4f7fb;
 }
-.stApp { background: var(--canvas); color: var(--ink); }
-html, body, [class*="css"] { font-family: Inter, Cairo, sans-serif; }
-.block-container { max-width: 1220px; padding-top: 1.25rem; padding-bottom: 3rem; }
-[data-testid="stSidebar"] {
-  background: #ffffff;
-  border-right: 1px solid var(--line);
+
+html, body, [data-testid="stAppViewContainer"], .stApp,
+[data-testid="stHeader"], [data-testid="stMain"], section.main {
+  color-scheme: light !important;
+  background: #f4f7fb !important;
+  color: #17243a !important;
 }
+.stApp { background: var(--canvas) !important; color: var(--ink) !important; }
+[data-testid="stWidgetLabel"] p, label, p, span, div {
+  color-scheme: light;
+}
+
+html, body, [class*="css"] { font-family: Inter, Cairo, sans-serif; }
+.block-container { max-width: 1220px; padding-top: 1.0rem; padding-bottom: 3rem; }
+[data-testid="stSidebar"] { display:none !important; }
 [data-testid="stSidebar"] > div:first-child { padding-top: 1.2rem; }
 [data-testid="stSidebar"] [data-testid="stRadio"] label { font-weight: 600; }
 header[data-testid="stHeader"] { background: rgba(244,247,251,.88); }
+
 footer { visibility: hidden; }
+@media (max-width: 720px) {
+  .block-container { padding-left: 1rem; padding-right: 1rem; }
+  .hero { padding:22px 20px; border-radius:19px; }
+  .top-nav-wrap { align-items:flex-start; flex-direction:column; }
+  .result-shell { padding:19px; }
+  div[data-testid="stRadio"] div[role="radiogroup"] { justify-content:flex-start; }
+}
+
 
 .brand-mark {
   display: flex; align-items: center; gap: 11px;
@@ -63,7 +81,7 @@ footer { visibility: hidden; }
   background: linear-gradient(145deg,#3478f6,#2454c7);
   box-shadow: 0 8px 18px rgba(40,100,220,.22);
 }
-.brand-name { font-size: 16px; font-weight: 800; color: #17243a; line-height: 1.2; }
+.brand-name { font-size: 18px; font-weight: 850; color: #17243a; line-height: 1.2; letter-spacing:-.45px; }
 .brand-sub { font-size: 10px; letter-spacing: 1.25px; color: #8b98aa; font-weight: 700; margin-top: 4px; }
 
 .topline {
@@ -76,10 +94,10 @@ footer { visibility: hidden; }
 }
 .hero {
   position:relative; overflow:hidden;
-  padding:28px 30px; border:1px solid #e3ebf7;
-  border-radius:24px; margin-bottom:20px;
+  padding:32px 34px; border:1px solid #e3ebf7;
+  border-radius:25px; margin-bottom:23px;
   background:linear-gradient(115deg,#ffffff 0%,#f8fbff 60%,#edf4ff 100%);
-  box-shadow:0 8px 26px rgba(34,65,112,.045);
+  box-shadow:0 12px 32px rgba(34,65,112,.055);
 }
 .hero:after {
   content:""; position:absolute; width:210px; height:210px;
@@ -99,7 +117,32 @@ footer { visibility: hidden; }
   font-weight:800; letter-spacing:.6px;
 }
 
+
+.top-nav-wrap {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:18px; padding:13px 18px; background:#fff;
+  border:1px solid #e7edf5; border-radius:17px;
+  box-shadow:0 5px 18px rgba(35,58,92,.035); margin-bottom:18px;
+}
+.top-nav-brand { color:#17243a; font-size:15px; font-weight:850; letter-spacing:-.3px; }
+.top-nav-caption { color:#8996a8; font-size:9px; letter-spacing:1.4px; font-weight:800; margin-top:3px; }
+div[data-testid="stRadio"] div[role="radiogroup"] {
+  display:flex; flex-wrap:wrap; gap:7px; justify-content:flex-end;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] label {
+  background:#f5f7fb !important; color:#53647b !important;
+  border:1px solid #e8edf4 !important; border-radius:10px !important;
+  padding:7px 13px !important; min-height:34px;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
+  background:#eaf1ff !important; color:#2458cb !important;
+  border-color:#d7e5ff !important;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] label p {
+  color:inherit !important; font-weight:750 !important; font-size:11px !important;
+}
 .section-head { margin: 23px 0 12px; }
+
 .section-head h3 { margin:0; font-size:18px; color:#17243a; font-weight:800; }
 .section-head p { margin:4px 0 0; color:#8491a4; font-size:12px; }
 
@@ -117,10 +160,22 @@ div[data-testid="stRadio"] label,
 div[data-testid="stCheckbox"] label {
   color:#40516b !important; font-weight:650 !important; font-size:12px !important;
 }
-div[data-testid="stNumberInput"] input {
+
+div[data-testid="stNumberInput"] input,
+div[data-testid="stTextInput"] input,
+div[data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+div[data-testid="stDateInput"] input,
+div[data-testid="stTextArea"] textarea {
   border-radius:11px !important; min-height:42px;
-  background:#fbfcfe !important;
+  background:#fbfcfe !important; color:#17243a !important;
+  border-color:#dfe7f1 !important;
+  -webkit-text-fill-color:#17243a !important;
 }
+div[data-testid="stNumberInput"] button {
+  background:#f1f5fb !important; color:#2864dc !important;
+  border-color:#dfe7f1 !important;
+}
+
 div[data-testid="stNumberInput"] button {
   border-radius:9px !important; color:#2864dc !important;
 }
@@ -190,46 +245,72 @@ div[data-testid="stDataFrame"] { border:1px solid #e7edf5; border-radius:12px; o
 .metric-note { color:#75849a; font-size:11px; line-height:1.45; }
 .small-note { color:#8a97a9; font-size:11px; line-height:1.6; }
 .footer-line { border-top:1px solid #e5ebf3; margin-top:35px; padding-top:16px; color:#9aa5b4; font-size:10px; text-align:center; }
+
+/* GlycoSense refinements */
+[data-testid="stAppViewContainer"] * { color-scheme: light; }
+[data-testid="stHeader"] { background:rgba(244,247,251,.94) !important; }
+[data-testid="stToolbar"] { right:1rem; }
+[data-testid="stMainBlockContainer"] { padding-top:1rem; }
+div[data-testid="stRadio"] div[role="radiogroup"] label {
+  transition:background .16s ease, border-color .16s ease, color .16s ease;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] label:hover {
+  border-color:#b9cdf2 !important; background:#f0f5ff !important;
+}
+div[data-testid="stNumberInput"] input:focus,
+div[data-testid="stTextInput"] input:focus {
+  border-color:#7da7f4 !important;
+  box-shadow:0 0 0 2px rgba(40,100,220,.10) !important;
+}
+div[data-testid="stExpander"] summary {
+  color:#263b59 !important; font-weight:700 !important;
+}
+div[data-testid="stMetric"] {
+  background:#fff; border:1px solid #e7edf5; border-radius:14px;
+  padding:12px 14px;
+}
+div[data-testid="stMetric"] label { color:#8491a4 !important; }
+div[data-testid="stMetric"] [data-testid="stMetricValue"] { color:#17243a !important; }
+@media (max-width: 720px) {
+  .brand-mark { padding-bottom:12px; }
+  .hero { padding:23px 20px; }
+  .hero h1 { font-size:28px; }
+  .hero p { font-size:13px; }
+  div[data-testid="stRadio"] div[role="radiogroup"] label { padding:6px 9px !important; }
+}
+
 </style>
 """,
     unsafe_allow_html=True,
 )
 
-# Sidebar navigation
-with st.sidebar:
+# Top navigation — no sidebar.
+nav_left, nav_right = st.columns([1.25, 2.2], vertical_alignment="center")
+with nav_left:
     st.markdown(
         """
-        <div class="brand-mark">
+        <div class="brand-mark" style="padding:4px 0 4px 0">
           <div class="brand-icon">+</div>
-          <div><div class="brand-name">Diabetes Risk</div>
-          <div class="brand-sub">ANALYSIS PLATFORM</div></div>
+          <div><div class="brand-name">GlycoSense</div>
+          <div class="brand-sub">HEALTH INTELLIGENCE</div></div>
         </div>
         """,
         unsafe_allow_html=True,
     )
+with nav_right:
     page = st.radio(
-        "WORKSPACE",
+        "Main navigation",
         ["Analysis", "Rule Library", "About & Tests"],
-        label_visibility="visible",
+        horizontal=True,
+        label_visibility="collapsed",
     )
-    st.divider()
-    st.markdown("**PROJECT STATUS**")
-    st.caption(f"● {RULE_COUNT} transparent rules")
-    st.caption("Educational tool · Adults 20+")
-    st.caption("No machine learning or probability")
 
-# Header
 st.markdown(
     """
-    <div class="topline">
-      <div><div class="eyebrow">HEALTH INSIGHTS / WORKSPACE</div></div>
-      <div class="hero-tag">● RULE-BASED ANALYSIS</div>
-    </div>
     <div class="hero">
-      <div class="eyebrow">SMART HEALTH INDICATORS</div>
-      <h1>Diabetes Risk Analysis</h1>
-      <p>Understand the indicators, see a clear result, and know what to do next.
-      Built around transparent rules — not a diagnosis.</p>
+      <div class="eyebrow">HEALTH INTELLIGENCE / 01</div>
+      <h1>Your health, clearly understood.</h1>
+      <p>A simple, transparent assessment of diabetes-related health indicators. Clear results, practical next steps, and no hidden scoring.</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -242,12 +323,12 @@ if page == "Analysis":
         unsafe_allow_html=True,
     )
     st.info(
-        "For this project, enter a fasting glucose reading taken after at least "
+        "Enter a fasting glucose reading taken after at least "
         "8 hours without calories. The app does not diagnose diabetes."
     )
 
     with st.container(border=True):
-        st.markdown("**01  ·  Basic information**")
+        st.markdown("**01  ·  Personal indicators**")
         c1, c2 = st.columns(2)
         with c1:
             age = st.number_input("Age (years)", min_value=1, max_value=120, value=35, step=1)
@@ -284,7 +365,7 @@ if page == "Analysis":
         )
 
         st.markdown("---")
-        st.markdown("**03  ·  Blood pressure**")
+        st.markdown("**03  ·  Clinical indicators**")
         c1, c2 = st.columns(2)
         with c1:
             systolic = st.number_input(
@@ -314,7 +395,7 @@ if page == "Analysis":
         b1, b2 = st.columns([3, 1])
         with b1:
             analyze_clicked = st.button(
-                "Analyze patient data  →", type="primary", use_container_width=True
+                "Run Health Assessment  →", type="primary", use_container_width=True
             )
         with b2:
             clear_clicked = st.button("Clear result", use_container_width=True)
@@ -457,13 +538,13 @@ if page == "Analysis":
                         unsafe_allow_html=True,
                     )
 
-            with st.expander("Understand why this result appeared"):
+            with st.expander("View detailed analysis · Why this result appeared"):
                 st.write(report["summary"])
                 for rule in report["triggered_rules"]:
                     st.markdown(f'**{rule["rule_id"]} · {rule["name"]}** — {rule["result"]}')
                     st.caption(rule["explanation"])
 
-            with st.expander("Interactive analysis charts"):
+            with st.expander("Explore visual indicators and charts"):
                 tab1, tab2, tab3 = st.tabs(
                     ["Glucose range", "Other indicators", "Rule activity"]
                 )
@@ -483,7 +564,7 @@ if page == "Analysis":
                     st.pyplot(fig, use_container_width=True)
                     plt.close(fig)
 
-            with st.expander("Technical report · all 27 rules"):
+            with st.expander("Technical report · applicable rules and recommendations"):
                 st.dataframe(
                     [
                         {
@@ -520,7 +601,7 @@ if page == "Analysis":
 
 elif page == "Rule Library":
     st.markdown(
-        '<div class="section-head"><h3>Transparent rule library</h3>'
+        '<div class="section-head"><h3>Rule library</h3>'
         '<p>Explore the logic behind the analysis.</p></div>',
         unsafe_allow_html=True,
     )
@@ -532,7 +613,7 @@ elif page == "Rule Library":
 
 elif page == "About & Tests":
     st.markdown(
-        '<div class="section-head"><h3>About the project</h3>'
+        '<div class="section-head"><h3>About GlycoSense</h3>'
         '<p>Scope, methodology, and quality checks.</p></div>',
         unsafe_allow_html=True,
     )
