@@ -85,6 +85,39 @@ def demo_patient(glucose_value: float) -> dict:
     }
 
 
+def load_demo_into_form(glucose_value: float) -> None:
+    """Update both the analysis payload and the visible Streamlit widgets."""
+    demo = demo_patient(glucose_value)
+    st.session_state["input_age"] = demo["age"]
+    st.session_state["input_glucose"] = demo["glucose"]
+    st.session_state["input_height"] = 170.0
+    st.session_state["input_weight"] = 68.0  # BMI ≈ 23.5
+    st.session_state["input_systolic"] = demo["systolic_bp"]
+    st.session_state["input_diastolic"] = demo["diastolic_bp"]
+    st.session_state["input_family"] = "Yes" if demo["family_history"] else "No"
+    st.session_state["input_insulin_on"] = False
+    st.session_state["input_insulin"] = 0.0
+    demo["bmi"] = round(68.0 / (1.70 ** 2), 2)
+    run_assessment(demo, demo=True)
+
+
+# Initialize form state once. Demo buttons update these keys before widgets render.
+_FORM_DEFAULTS = {
+    "input_age": 35,
+    "input_glucose": 90.0,
+    "input_height": 170.0,
+    "input_weight": 65.0,
+    "input_systolic": 118,
+    "input_diastolic": 76,
+    "input_family": "No",
+    "input_insulin_on": False,
+    "input_insulin": 0.0,
+}
+for _key, _value in _FORM_DEFAULTS.items():
+    if _key not in st.session_state:
+        st.session_state[_key] = _value
+
+
 # Header and navigation
 left, right = st.columns([1.15, 2.2], vertical_alignment="center")
 with left:
@@ -119,25 +152,25 @@ if page == "Analysis":
     ):
         with col:
             if st.button(f"View {label} example", key=key, use_container_width=True):
-                run_assessment(demo_patient(glucose_value), demo=True)
+                load_demo_into_form(glucose_value)
                 st.rerun()
 
     with st.container(border=True):
         st.markdown("**01 · Personal indicators**")
         c1, c2 = st.columns(2)
         with c1:
-            age = st.number_input("Age (years)", min_value=20, max_value=120, value=35, step=1,
+            age = st.number_input("Age (years)", min_value=20, max_value=120, step=1, key="input_age",
                                   help="This project is scoped to adults aged 20 years and older.")
         with c2:
             glucose = st.number_input("Fasting glucose (mg/dL)", min_value=20.0, max_value=600.0,
-                                      value=90.0, step=1.0, format="%.1f")
+                                      step=1.0, format="%.1f", key="input_glucose")
         st.markdown("---")
         st.markdown("**02 · Body measurements**")
         c1, c2 = st.columns(2)
         with c1:
-            height = st.number_input("Height (cm)", min_value=100.0, max_value=230.0, value=170.0, step=0.5)
+            height = st.number_input("Height (cm)", min_value=100.0, max_value=230.0, step=0.5, key="input_height")
         with c2:
-            weight = st.number_input("Weight (kg)", min_value=25.0, max_value=300.0, value=65.0, step=0.5)
+            weight = st.number_input("Weight (kg)", min_value=25.0, max_value=300.0, step=0.5, key="input_weight")
         bmi = weight / ((height / 100.0) ** 2)
         st.markdown(f"""
         <div class="bmi-preview"><div><div class="bmi-label">AUTOMATIC BMI CALCULATION</div>
@@ -148,16 +181,16 @@ if page == "Analysis":
         st.markdown("**03 · Clinical indicators**")
         c1, c2 = st.columns(2)
         with c1:
-            systolic = st.number_input("Systolic (mmHg)", min_value=50, max_value=300, value=118, step=1)
+            systolic = st.number_input("Systolic (mmHg)", min_value=50, max_value=300, step=1, key="input_systolic")
         with c2:
-            diastolic = st.number_input("Diastolic (mmHg)", min_value=30, max_value=200, value=76, step=1)
+            diastolic = st.number_input("Diastolic (mmHg)", min_value=30, max_value=200, step=1, key="input_diastolic")
         st.markdown("---")
         st.markdown("**04 · Family history**")
-        family = st.radio("Parent or sibling with Type 2 diabetes?", ["No", "Yes"], horizontal=True)
+        family = st.radio("Parent or sibling with Type 2 diabetes?", ["No", "Yes"], horizontal=True, key="input_family")
         with st.expander("＋ Optional information"):
-            insulin_on = st.checkbox("Include insulin value")
+            insulin_on = st.checkbox("Include insulin value", key="input_insulin_on")
             insulin = st.number_input("Insulin (µIU/mL)", min_value=0.0, max_value=1000.0,
-                                      value=0.0, step=0.1, disabled=not insulin_on)
+                                      step=0.1, disabled=not insulin_on, key="input_insulin")
             st.caption("Insulin is displayed for context only; it does not change the glucose result.")
         b1, b2 = st.columns([3, 1])
         with b1:
@@ -190,6 +223,15 @@ if page == "Analysis":
             with exit_col:
                 if st.button("Exit demo", use_container_width=True):
                     clear_assessment()
+                    st.session_state["input_age"] = 35
+                    st.session_state["input_glucose"] = 90.0
+                    st.session_state["input_height"] = 170.0
+                    st.session_state["input_weight"] = 65.0
+                    st.session_state["input_systolic"] = 118
+                    st.session_state["input_diastolic"] = 76
+                    st.session_state["input_family"] = "No"
+                    st.session_state["input_insulin_on"] = False
+                    st.session_state["input_insulin"] = 0.0
                     st.rerun()
 
         report = build_report(data, result)
