@@ -77,27 +77,34 @@ def run_assessment(patient: dict, demo: bool = False):
     st.session_state["demo_mode"] = demo
 
 
-def demo_patient(glucose_value: float) -> dict:
+def demo_patient(profile: dict) -> dict:
+    """Build a complete synthetic patient profile for a selected demo result."""
+    height_m = float(profile["height"]) / 100.0
+    bmi = float(profile["weight"]) / (height_m ** 2)
     return {
-        "age": 35, "glucose": float(glucose_value), "glucose_type": "Fasting",
-        "bmi": 23.5, "systolic_bp": 118, "diastolic_bp": 76,
-        "insulin": None, "family_history": False,
+        "age": int(profile["age"]),
+        "glucose": float(profile["glucose"]),
+        "glucose_type": "Fasting",
+        "bmi": round(bmi, 2),
+        "systolic_bp": int(profile["systolic"]),
+        "diastolic_bp": int(profile["diastolic"]),
+        "insulin": float(profile["insulin"]) if profile["insulin"] is not None else None,
+        "family_history": bool(profile["family_history"]),
     }
 
 
-def load_demo_into_form(glucose_value: float) -> None:
-    """Update both the analysis payload and the visible Streamlit widgets."""
-    demo = demo_patient(glucose_value)
+def load_demo_into_form(profile: dict) -> None:
+    """Update every visible input and run the real analysis engine."""
+    demo = demo_patient(profile)
     st.session_state["input_age"] = demo["age"]
     st.session_state["input_glucose"] = demo["glucose"]
-    st.session_state["input_height"] = 170.0
-    st.session_state["input_weight"] = 68.0  # BMI ≈ 23.5
+    st.session_state["input_height"] = float(profile["height"])
+    st.session_state["input_weight"] = float(profile["weight"])
     st.session_state["input_systolic"] = demo["systolic_bp"]
     st.session_state["input_diastolic"] = demo["diastolic_bp"]
     st.session_state["input_family"] = "Yes" if demo["family_history"] else "No"
-    st.session_state["input_insulin_on"] = False
-    st.session_state["input_insulin"] = 0.0
-    demo["bmi"] = round(68.0 / (1.70 ** 2), 2)
+    st.session_state["input_insulin_on"] = demo["insulin"] is not None
+    st.session_state["input_insulin"] = float(demo["insulin"] or 0.0)
     run_assessment(demo, demo=True)
 
 
@@ -144,15 +151,27 @@ if page == "Analysis":
     st.markdown("**Quick demo · Try the three result categories**")
     st.caption("Synthetic examples only. Select a result to run the actual analysis engine.")
     demo_cols = st.columns(3)
-    for col, (label, glucose_value, key) in zip(
-        demo_cols,
-        [("Negative", 90.0, "demo_negative"),
-         ("Moderate", 110.0, "demo_moderate"),
-         ("Positive", 130.0, "demo_positive")],
-    ):
+    demo_profiles = [
+        ("Negative", {
+            "age": 27, "glucose": 92.0, "height": 168.0, "weight": 63.0,
+            "systolic": 112, "diastolic": 72, "family_history": False,
+            "insulin": None,
+        }, "demo_negative"),
+        ("Moderate", {
+            "age": 43, "glucose": 112.0, "height": 174.0, "weight": 79.0,
+            "systolic": 132, "diastolic": 84, "family_history": True,
+            "insulin": 14.2,
+        }, "demo_moderate"),
+        ("Positive", {
+            "age": 59, "glucose": 138.0, "height": 161.0, "weight": 78.0,
+            "systolic": 146, "diastolic": 92, "family_history": True,
+            "insulin": 19.5,
+        }, "demo_positive"),
+    ]
+    for col, (label, profile, key) in zip(demo_cols, demo_profiles):
         with col:
             if st.button(f"View {label} example", key=key, use_container_width=True):
-                load_demo_into_form(glucose_value)
+                load_demo_into_form(profile)
                 st.rerun()
 
     with st.container(border=True):
